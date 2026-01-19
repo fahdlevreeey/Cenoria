@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Watch Later</title>
+</head>
+<body>
+
+<h2>Watch Later</h2>
+
+<form method="post" action="{% url 'add_watch_later' %}">
+    {% csrf_token %}
+    <input name="title" placeholder="Movie title" required>
+    <button type="submit">Add</button>
+</form>
+
+<ul>
+    {% for item in items %}
+        <li>
+            {{ item.title }}
+            <a href="{% url 'remove_watch_later' item.id %}">❌</a>
+        </li>
+    {% empty %}
+        <li>No movies in watch later</li>
+    {% endfor %}
+</ul>
+
+</body>
+</html>

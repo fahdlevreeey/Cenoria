@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Playlists</title>
+</head>
+<body>
+
+<h2>My Playlists</h2>
+
+<!-- Create playlist -->
+<form method="post" action="{% url 'create_playlist' %}">
+    {% csrf_token %}
+    <input name="name" placeholder="Playlist name" required>
+    <button type="submit">Create</button>
+</form>
+
+<hr>
+
+{% for playlist in playlists %}
+    <h3>{{ playlist.name }}</h3>
+
+    <!-- Add movie -->
+    <form method="post" action="{% url 'add_to_playlist' playlist.id %}">
+        {% csrf_token %}
+        <input name="title" placeholder="Movie title" required>
+        <button type="submit">Add</button>
+    </form>
+
+    <ul>
+        {% for item in playlist.items.all %}
+            <li>
+                {{ item.title }}
+                <a href="{% url 'remove_from_playlist' item.id %}">❌</a>
+            </li>
+        {% empty %}
+            <li>No movies yet</li>
+        {% endfor %}
+    </ul>
+
+{% empty %}
+    <p>No playlists created.</p>
+{% endfor %}
+
+</body>
+</html>
