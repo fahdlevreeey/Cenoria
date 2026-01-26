@@ -1,0 +1,63 @@
+<h1>Settings</h1>
+
+{% if messages %}
+  {% for message in messages %}
+    <p>{{ message }}</p>
+  {% endfor %}
+{% endif %}
+
+<hr>
+
+<h2>Profile</h2>
+
+{% if profile.photo %}
+  <img src="{{ profile.photo.url }}" width="120" alt="photo">
+{% else %}
+  <p>No photo</p>
+{% endif %}
+
+<form method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="update_profile">
+
+  <h3>Username</h3>
+  {{ user_form.as_p }}
+
+  <h3>Photo</h3>
+  {{ profile_form.as_p }}
+
+  <button type="submit">Save changes</button>
+</form>
+
+<hr>
+
+<h2>Change Email</h2>
+
+<form method="POST">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="change_email">
+
+  {{ email_form.as_p }}
+
+  <button type="submit">Change email</button>
+</form>
+
+
+<hr>
+
+<h2>Change password</h2>
+
+<form method="POST">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="change_password">
+
+  {{ pass_form.as_p }}
+  <button type="submit">Change password</button>
+</form>
+
+<hr>
+
+<form method="POST" action="{% url 'accounts:logout' %}">
+  {% csrf_token %}
+  <button type="submit">Logout</button>
+</form>

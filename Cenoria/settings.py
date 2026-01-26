@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "playlists",
     "interactions",
     "movies",
+    "accounts.apps.AccountsConfig"
 ]
 
 MIDDLEWARE = [
