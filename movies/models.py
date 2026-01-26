@@ -18,6 +18,9 @@ class Film(models.Model):
     description = models.TextField()
     genre = models.CharField(max_length=50, choices=CATEGORIES)
     date_sortie = models.DateField()
+    video = models.FileField(upload_to="videos/")
+    thumbnail = models.ImageField(upload_to="thumbnails/")
+
 
     def __str__(self):
         return self.titre
