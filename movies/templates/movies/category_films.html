@@ -2,8 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Dashboard - Cenoria</title>
-
+<title>{{ category_code }} - Cenoria</title>
 <style>
 :root{
     --bg:#0f1115;
@@ -64,7 +63,9 @@ body{
 .top-bar{
     display:flex;
     justify-content:flex-end;
+    align-items:center;
     margin-bottom:20px;
+    position:relative;
 }
 
 .profile-wrapper{position:relative}
@@ -105,27 +106,7 @@ body{
 }
 
 /* Titles */
-h1{margin-top:0}
-.section-title{margin:30px 0 15px}
-
-/* Search */
-.search-bar input{
-    width:300px;
-    padding:10px 14px;
-    background:#111;
-    border:1px solid #333;
-    border-radius:8px;
-    color:white;
-}
-
-.search-bar button{
-    padding:10px 16px;
-    border:none;
-    border-radius:8px;
-    background:var(--accent);
-    cursor:pointer;
-    margin-left:6px;
-}
+h1{margin-top:0;margin-bottom:20px}
 
 /* Films grid */
 .films-container{
@@ -134,48 +115,48 @@ h1{margin-top:0}
     gap:20px;
 }
 
-/* Card */
+/* Film card */
 .film-card{
     background:var(--card);
     border-radius:14px;
     overflow:hidden;
-    transition:.25s;
-}
-
-.film-card:hover{
-    transform:translateY(-5px);
+    text-align:center;
+    padding:10px;
 }
 
 .film-card img{
     width:100%;
     height:250px;
     object-fit:cover;
-    display:block;
+    border-radius:6px;
 }
 
-.card-body{
-    padding:12px;
-}
-
-.film-title{
+.film-card div{
+    margin-top:8px;
     font-weight:600;
-    margin-bottom:5px;
 }
-
-.muted{color:var(--muted);font-size:14px}
 
 /* Buttons */
 .btn{
-    width:100%;
     padding:8px;
     border-radius:8px;
     cursor:pointer;
+    font-weight:bold;
+    transition:.2s;
+    text-align:center;
+    display:inline-block;
+    width:90%;
     margin-top:8px;
 }
 
 .btn-primary{
     background:var(--accent);
     border:none;
+    color:#111;
+}
+
+.btn-primary:hover{
+    background:#e6b335;
 }
 
 .btn-outline{
@@ -188,13 +169,8 @@ h1{margin-top:0}
     background:var(--accent);
     color:#111;
 }
-
-.watch-later-section{
-    margin-bottom:30px;
-}
 </style>
 </head>
-
 <body>
 
 <div class="layout">
@@ -213,10 +189,7 @@ h1{margin-top:0}
 
 <div class="top-bar">
     <div class="profile-wrapper">
-        <div class="profile-circle" onclick="toggleProfileMenu()">
-            {{ request.user.username|slice:":1"|upper }}
-        </div>
-
+        <div class="profile-circle" onclick="toggleProfileMenu()">P</div>
         <div class="profile-menu" id="profileMenu">
             <a href="{% url 'accounts:settings' %}">⚙️ Settings</a>
             <a href="{% url 'accounts:logout' %}">🚪 Déconnexion</a>
@@ -224,79 +197,51 @@ h1{margin-top:0}
     </div>
 </div>
 
-<h1>Dashboard</h1>
+<h1>{{ category_code }}</h1>
 
-<h2 class="section-title">⏳ Watch Later</h2>
-
-<div class="films-container watch-later-section">
-{% for item in watch_later_items %}
-<div class="film-card">
-    <a href="{% url 'movies:film_detail' item.film.id %}">
-        <img src="{{ item.film.thumbnail.url }}">
-    </a>
-    <div class="card-body">
-        <div class="film-title">{{ item.film.titre }}</div>
-    </div>
-</div>
-{% empty %}
-<p class="muted">Aucun film en attente.</p>
-{% endfor %}
-</div>
-
-<hr style="border-color:#222">
-
-<div class="search-bar">
-<form method="get">
-    <input type="text" name="q" placeholder="Rechercher un film..." value="{{ query }}">
-    <button type="submit">Rechercher</button>
-</form>
-</div>
-
-<h2 class="section-title">Tous les films</h2>
-
+{% if films %}
 <div class="films-container">
-{% for film in films %}
-<div class="film-card">
+    {% for film in films %}
+    <div class="film-card">
+        <a href="{% url 'movies:film_detail' film.id %}">
+            <img src="{{ film.thumbnail.url }}" alt="{{ film.titre }}">
+            <div>{{ film.titre }}</div>
+        </a>
 
-<a href="{% url 'movies:film_detail' film.id %}">
-    <img src="{{ film.thumbnail.url }}">
-</a>
-
-<div class="card-body">
-    <div class="film-title">{{ film.titre }}</div>
-    <div class="muted">{{ film.genre }} • ⭐ {{ film.get_moyenne }}/5</div>
-
-{% if film.id in watch_later_ids %}
-<form method="post" action="{% url 'playlists:remove_watch_later' film.id %}">
-{% csrf_token %}
-<button class="btn btn-outline">Retirer</button>
-</form>
+        {% if film.id in watch_later_ids %}
+        <form action="{% url 'playlists:remove_watch_later' film.id %}" method="post">
+            {% csrf_token %}
+            <button class="btn btn-outline">Retirer de Watch Later</button>
+        </form>
+        {% else %}
+        <form action="{% url 'playlists:add_watch_later' film.id %}" method="post">
+            {% csrf_token %}
+            <button class="btn btn-primary">Ajouter à Watch Later</button>
+        </form>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
 {% else %}
-<form method="post" action="{% url 'playlists:add_watch_later' film.id %}">
-{% csrf_token %}
-<button class="btn btn-primary">Ajouter</button>
-</form>
+<p class="muted">Aucun film disponible dans cette catégorie 😅</p>
 {% endif %}
 
-</div>
-</div>
-{% endfor %}
-</div>
+<br>
+<a href="{% url 'movies:categories_overview' %}" class="btn btn-primary">⬅ Retour aux Catégories</a>
 
 </div>
 </div>
 
 <script>
 function toggleProfileMenu(){
-    const m=document.getElementById("profileMenu");
-    m.style.display = m.style.display==="block"?"none":"block";
+    const menu=document.getElementById("profileMenu");
+    menu.style.display=menu.style.display==="block"?"none":"block";
 }
-
-document.addEventListener("click",e=>{
-    const m=document.getElementById("profileMenu");
-    const c=document.querySelector(".profile-circle");
-    if(!m.contains(e.target)&&!c.contains(e.target)){
-        m.style.display="none";
+document.addEventListener("click",function(e){
+    const menu=document.getElementById("profileMenu");
+    const circle=document.querySelector(".profile-circle");
+    if(!menu.contains(e.target)&&!circle.contains(e.target)){
+        menu.style.display="none";
     }
 });
 </script>

@@ -1,14 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 
-from .models import Profile
 from .forms import (
-    ProfileForm,
-    ProfileUpdateForm,
     UserUpdateForm,
     EmailUpdateForm,
 )
@@ -16,7 +12,6 @@ from .forms import (
 
 @login_required
 def settings_view(request):
-    profile, _ = Profile.objects.get_or_create(user=request.user)
 
     if request.method == "POST":
         action = request.POST.get("action")
@@ -25,33 +20,17 @@ def settings_view(request):
             email_form = EmailUpdateForm(request.POST, instance=request.user)
             if email_form.is_valid():
                 email_form.save()
-                messages.success(request, "Email updated successfully")
                 return redirect("accounts:settings")
-            messages.error(request, "Invalid email address")
-
-        elif action == "update_profile":
-            user_form = UserUpdateForm(request.POST, instance=request.user)
-            profile_form = ProfileForm(request.POST, request.FILES, instance=profile)
-
-            if user_form.is_valid() and profile_form.is_valid():
-                user_form.save()
-                profile_form.save()
-                messages.success(request, "Profile updated successfully")
-                return redirect("accounts:settings")
-            messages.error(request, "Please check the form fields")
 
         elif action == "change_password":
             pass_form = PasswordChangeForm(user=request.user, data=request.POST)
             if pass_form.is_valid():
                 user = pass_form.save()
                 update_session_auth_hash(request, user)
-                messages.success(request, "Password changed successfully")
                 return redirect("accounts:settings")
-            messages.error(request, "Password change failed")
 
     email_form = EmailUpdateForm(instance=request.user)
     user_form = UserUpdateForm(instance=request.user)
-    profile_form = ProfileForm(instance=profile)
     pass_form = PasswordChangeForm(user=request.user)
 
     return render(
@@ -60,11 +39,10 @@ def settings_view(request):
         {
             "email_form": email_form,
             "user_form": user_form,
-            "profile_form": profile_form,
             "pass_form": pass_form,
-            "profile": profile,
         },
     )
+
 
 
 def sign(request):
@@ -125,27 +103,6 @@ def user_logout(request):
     return redirect("accounts:login")
 
 
-@login_required
-def profile_view(request):
-    profile, _ = Profile.objects.get_or_create(user=request.user)
-
-    if request.method == "POST":
-        form = ProfileUpdateForm(request.POST, instance=profile)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Profile updated successfully")
-            return redirect("accounts:profile")
-    else:
-        form = ProfileUpdateForm(instance=profile)
-
-    return render(
-        request,
-        "accounts/profile.html",
-        {
-            "form": form,
-            "profile": profile,
-        }
-    )
 
 
 def accounts_home(request):

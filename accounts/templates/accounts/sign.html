@@ -1,24 +1,107 @@
-<h2>Sign in</h2>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign in - Cenoria</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #0f0f0f;
+            color: #eee;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
 
-{% if error %}
-<p style="color:red;">{{ error }}</p>
-{% endif %}
+        .container {
+            background: #1a1a1a;
+            padding: 40px;
+            border-radius: 12px;
+            width: 400px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            text-align: center;
+        }
 
-<form method="post">
-  {% csrf_token %}
+        h2 {
+            margin-bottom: 25px;
+            font-size: 28px;
+        }
 
-  <input type="text" name="username" placeholder="Username" required><br><br>
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border: 1px solid #333;
+            background: #111;
+            color: #eee;
+            font-size: 14px;
+        }
 
-  <input type="email" name="email" placeholder="Email"><br><br>
+        button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: none;
+            background: #f0c040;
+            color: #111;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
 
-  <input type="password" name="password" placeholder="Password" required><br><br>
+        button:hover {
+            background: #e6b800;
+        }
 
-  <input type="password" name="password2" placeholder="Confirm Password" required><br><br>
+        .error-msg {
+            background: #d9534f;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            color: white;
+        }
 
-  <button type="submit">Sign in</button>
-</form>
+        p {
+            margin-top: 20px;
+            font-size: 14px;
+        }
 
-<p>
-  Already have an account? <a href="{% url 'accounts:login' %}">Login</a>
-</p>
+        a {
+            color: #f0c040;
+            text-decoration: none;
+            font-weight: bold;
+        }
 
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Sign in</h2>
+
+    {% if error %}
+        <div class="error-msg">{{ error }}</div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="email" name="email" placeholder="Email">
+        <input type="password" name="password" placeholder="Password" required>
+        <input type="password" name="password2" placeholder="Confirm Password" required>
+
+        <button type="submit">Sign in</button>
+    </form>
+
+    <p>Already have an account? <a href="{% url 'accounts:login' %}">Login</a></p>
+</div>
+
+</body>
+</html>

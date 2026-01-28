@@ -67,3 +67,46 @@ def film_detail(request, film_id):
         "playlists": playlists,
     }
     return render(request, "movies/film_detail.html", context)
+
+CATEGORIES = (
+    ('ACTION', 'Action'),
+    ('COMEDIE', 'Comédie'),
+    ('DRAME', 'Drame'),
+    ('SF', 'Science-Fiction'),
+    ('HORREUR', 'Horreur'),
+    ('ANIMATION', 'Dessin Animé'),
+)
+
+@login_required
+def categories_overview(request):
+    categories_data = []
+
+    for code, name in CATEGORIES:
+        films = Film.objects.filter(genre=code).order_by('-date_sortie')[:3]  # max 3 films
+        categories_data.append({
+            "code": code,
+            "name": name,
+            "films": films,
+            "has_films": films.exists()
+        })
+
+    context = {
+        "categories_data": categories_data
+    }
+    return render(request, "movies/categories.html", context)
+
+
+@login_required
+def category_films(request, category_code):
+    # On filtre tous les films de cette catégorie
+    films = Film.objects.filter(genre__iexact=category_code).order_by('-date_sortie')
+
+    # Pour Watch Later
+    watch_later_ids = request.user.watch_later.all().values_list('film_id', flat=True)
+
+    context = {
+        "category_code": category_code,
+        "films": films,
+        "watch_later_ids": watch_later_ids,
+    }
+    return render(request, "movies/category_films.html", context)

@@ -1,54 +1,266 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Watch Later</title>
-    <style>
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 20px;
-        }
-        .card {
-            border: 1px solid #ccc;
-            padding: 10px;
-            border-radius: 8px;
-            text-align: center;
-        }
-        img {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Watch Later - Cenoria</title>
+<style>
+:root{
+    --bg:#0f1115;
+    --bg2:#161a21;
+    --card:#1c212b;
+    --accent:#f0c040;
+    --text:#ffffff;
+    --muted:#b3b3b3;
+}
+
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    font-family:Segoe UI,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+}
+
+/* Layout */
+.layout{display:flex;min-height:100vh}
+
+/* Sidebar */
+.sidebar{
+    width:240px;
+    background:var(--bg2);
+    padding:25px 20px;
+    display:flex;
+    flex-direction:column;
+}
+
+.sidebar h2{
+    margin:0 0 30px;
+    color:var(--accent);
+}
+
+.sidebar a{
+    color:var(--muted);
+    text-decoration:none;
+    padding:12px 15px;
+    border-radius:10px;
+    margin-bottom:8px;
+    transition:.2s;
+}
+
+.sidebar a:hover{
+    background:#222836;
+    color:white;
+}
+
+/* Content */
+.content{
+    flex:1;
+    padding:25px 35px;
+}
+
+/* Top bar */
+.top-bar{
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.profile-wrapper{position:relative}
+
+.profile-circle{
+    width:42px;height:42px;
+    border-radius:50%;
+    background:var(--accent);
+    color:#111;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.profile-menu{
+    position:absolute;
+    right:0;
+    top:55px;
+    background:var(--card);
+    border-radius:12px;
+    width:170px;
+    display:none;
+    overflow:hidden;
+    box-shadow:0 10px 25px rgba(0,0,0,.4);
+}
+
+.profile-menu a{
+    display:block;
+    padding:12px 15px;
+    color:white;
+    text-decoration:none;
+}
+
+.profile-menu a:hover{
+    background:#262c38;
+}
+
+/* Titles */
+h1{margin-top:0;margin-bottom:20px}
+
+/* Films grid */
+.films-container{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+    gap:20px;
+}
+
+/* Card */
+.film-card{
+    background:var(--card);
+    border-radius:14px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    transition:.25s;
+}
+
+.film-card:hover{
+    transform:translateY(-5px);
+}
+
+.film-card img{
+    width:100%;
+    height:250px;
+    object-fit:cover;
+    display:block;
+}
+
+.card-body{
+    padding:12px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+}
+
+.film-title{
+    font-weight:600;
+    margin-bottom:5px;
+    text-align:center;
+}
+
+.muted{
+    color:var(--muted);
+    font-size:14px;
+    text-align:center;
+}
+
+/* Buttons */
+.btn{
+    width:100%;
+    padding:8px;
+    border-radius:8px;
+    cursor:pointer;
+    text-align:center;
+    font-weight:bold;
+    transition:.2s;
+}
+
+.btn-primary{
+    background:var(--accent);
+    border:none;
+    color:#111;
+}
+
+.btn-primary:hover{
+    background:#e6b335;
+}
+
+.btn-outline{
+    background:transparent;
+    border:1px solid var(--accent);
+    color:var(--accent);
+}
+
+.btn-outline:hover{
+    background:var(--accent);
+    color:#111;
+}
+</style>
 </head>
 <body>
+
+<div class="layout">
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <h2>Cenoria</h2>
+    <a href="{% url 'movies:dashboard' %}">🏠 Dashboard</a>
+    <a href="{% url 'playlists:watch_later' %}">⏳ Watch Later</a>
+    <a href="{% url 'playlists:playlists_list' %}">📂 Playlists</a>
+    <a href="{% url 'movies:categories_overview' %}">🎬 Catégories</a>
+</div>
+
+<!-- Content -->
+<div class="content">
+
+<div class="top-bar">
+    <div class="profile-wrapper">
+        <div class="profile-circle" onclick="toggleProfileMenu()">
+            {{ request.user.username|slice:":1"|upper }}
+        </div>
+
+        <div class="profile-menu" id="profileMenu">
+            <a href="{% url 'accounts:settings' %}">⚙️ Settings</a>
+            <a href="{% url 'accounts:logout' %}">🚪 Déconnexion</a>
+        </div>
+    </div>
+</div>
 
 <h1>🎬 Ma Watch Later</h1>
 
 {% if items %}
-<div class="grid">
+<div class="films-container">
     {% for item in items %}
-    <div class="card">
+    <div class="film-card">
         <img src="{{ item.film.thumbnail.url }}" alt="{{ item.film.titre }}">
-        <h3>{{ item.film.titre }}</h3>
-        <p>{{ item.film.genre }}</p>
-
-        <a href="{% url 'movies:film_detail' item.film.id %}">Voir le film</a>
-
-        <form action="{% url 'playlists:remove_watch_later' item.film.id %}" method="post">
-            {% csrf_token %}
-            <button type="submit">Retirer</button>
-        </form>
+        <div class="card-body">
+            <div class="film-title">{{ item.film.titre }}</div>
+            <div class="muted">{{ item.film.genre }}</div>
+            <a href="{% url 'movies:film_detail' item.film.id %}" class="btn btn-primary">Voir le film</a>
+            <form method="post" action="{% url 'playlists:remove_watch_later' item.film.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline">Retirer</button>
+            </form>
+        </div>
     </div>
     {% endfor %}
 </div>
 {% else %}
-<p>Aucun film dans ta Watch Later pour l'instant 😅</p>
+<p class="muted">Aucun film dans ta Watch Later pour l'instant 😅</p>
 {% endif %}
 
 <br>
-<a href="{% url 'movies:dashboard' %}">⬅ Retour au dashboard</a>
+<a href="{% url 'movies:dashboard' %}" class="btn btn-primary">⬅ Retour au Dashboard</a>
+
+</div>
+</div>
+
+<script>
+function toggleProfileMenu() {
+    const menu = document.getElementById("profileMenu");
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+document.addEventListener("click", function(e) {
+    const menu = document.getElementById("profileMenu");
+    const circle = document.querySelector(".profile-circle");
+
+    if (!menu.contains(e.target) && !circle.contains(e.target)) {
+        menu.style.display = "none";
+    }
+});
+</script>
 
 </body>
 </html>
