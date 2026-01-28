@@ -1,45 +1,167 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My Playlists</title>
+    <meta charset="UTF-8">
+    <title>Mes playlists - Cenoria</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 0;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 220px;
+            background: #111;
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .sidebar h2 {
+            margin-top: 0;
+            color: #f0c040;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            margin: 10px 0;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .sidebar a:hover {
+            background: #333;
+        }
+
+        /* Main content */
+        .content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .playlist {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        .film-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        /* Popup */
+        .popup-bg {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .popup {
+            background: white;
+            width: 300px;
+            margin: 120px auto;
+            padding: 20px;
+            text-align: center;
+            border-radius: 6px;
+        }
+
+        input {
+            width: 90%;
+            padding: 5px;
+        }
+    </style>
 </head>
 <body>
 
-<h2>My Playlists</h2>
+<!-- Sidebar -->
+<div class="sidebar">
+    <h2>Cenoria</h2>
+    <a href="{% url 'movies:dashboard' %}">🏠 Dashboard</a>
+    <a href="{% url 'playlists:watch_later' %}">⏳ Watch Later</a>
+    <a href="{% url 'playlists:playlists_list' %}">📂 Playlists</a>
+    <a href="{% url 'accounts:logout' %}">🚪 Logout</a>
+</div>
 
-<!-- Create playlist -->
-<form method="post" action="{% url 'create_playlist' %}">
-    {% csrf_token %}
-    <input name="name" placeholder="Playlist name" required>
-    <button type="submit">Create</button>
-</form>
+<!-- Main content -->
+<div class="content">
 
-<hr>
+    <h1>Mes playlists</h1>
 
-{% for playlist in playlists %}
-    <h3>{{ playlist.name }}</h3>
+    <button onclick="openCreatePopup()">➕ Créer une playlist</button>
 
-    <!-- Add movie -->
-    <form method="post" action="{% url 'add_to_playlist' playlist.id %}">
+    <hr>
+
+    {% for playlist in playlists %}
+        <div class="playlist">
+            <h3>{{ playlist.name }}</h3>
+
+            <form method="post" action="{% url 'playlists:delete_playlist' playlist.id %}"
+          onsubmit="return confirm('Supprimer cette playlist ?');">
         {% csrf_token %}
-        <input name="title" placeholder="Movie title" required>
-        <button type="submit">Add</button>
+        <button type="submit">🗑 Supprimer</button>
     </form>
 
-    <ul>
-        {% for item in playlist.items.all %}
-            <li>
-                {{ item.title }}
-                <a href="{% url 'remove_from_playlist' item.id %}">❌</a>
-            </li>
-        {% empty %}
-            <li>No movies yet</li>
-        {% endfor %}
-    </ul>
+            {% if playlist.items.all %}
+                {% for item in playlist.items.all %}
+                    <div class="film-item">
+                        <span>{{ item.film.titre }}</span>
 
-{% empty %}
-    <p>No playlists created.</p>
-{% endfor %}
+                        <form method="post" action="{% url 'playlists:remove_from_playlist' item.id %}">
+                            {% csrf_token %}
+                            <button type="submit">❌ Retirer</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>Aucun film dans cette playlist.</p>
+            {% endif %}
+        </div>
+    {% empty %}
+        <p>Aucune playlist créée.</p>
+    {% endfor %}
+
+</div>
+
+<!-- Popup create playlist -->
+<div id="create-playlist-popup" class="popup-bg">
+    <div class="popup">
+        <h3>Nouvelle playlist</h3>
+
+        <form method="post" action="{% url 'playlists:create_playlist' %}">
+            {% csrf_token %}
+            <input type="text" name="name" placeholder="Nom de la playlist" required>
+            <br><br>
+            <button type="submit">Créer</button>
+        </form>
+
+        <br>
+        <button onclick="closeCreatePopup()">Annuler</button>
+    </div>
+</div>
+
+<script>
+function openCreatePopup() {
+    document.getElementById("create-playlist-popup").style.display = "block";
+}
+
+function closeCreatePopup() {
+    document.getElementById("create-playlist-popup").style.display = "none";
+}
+</script>
 
 </body>
 </html>

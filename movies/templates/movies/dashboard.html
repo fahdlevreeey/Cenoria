@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Cenoria</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; }
+
+        .layout {
+            display: flex;
+        }
+
+        .sidebar {
+            width: 200px;
+            background: #111;
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .sidebar h2 {
+            margin-top: 0;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            margin: 10px 0;
+        }
+
+        .sidebar a:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .film-card {
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 220px;
+            display: inline-block;
+            vertical-align: top;
+            margin: 10px;
+        }
+
+        .film-card img {
+            width: 200px;
+            height: auto;
+        }
+
+        .film-title {
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .btn {
+            padding: 5px 10px;
+            margin-top: 5px;
+            cursor: pointer;
+        }
+
+        .watch-later {
+            background-color: #f0c040;
+            border: none;
+        }
+
+        .remove-watch-later {
+            background-color: #f08080;
+            border: none;
+        }
+
+        .search-bar {
+            margin-bottom: 20px;
+        }
+
+        .watch-later-section {
+            margin-bottom: 30px;
+        }
+
+        form { display: inline; }
+    </style>
+</head>
+<body>
+
+<div class="layout">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Cenoria</h2>
+        <a href="{% url 'movies:dashboard' %}">🏠 Dashboard</a>
+        <a href="{% url 'playlists:watch_later' %}">⏳ Watch Later</a>
+        <a href="{% url 'playlists:playlists_list' %}">📂 Playlists</a>
+        <a href="{% url 'accounts:profile' %}">👤 Profil</a>
+        <a href="{% url 'accounts:logout' %}">🚪 Déconnexion</a>
+    </div>
+
+    <!-- Main content -->
+    <div class="content">
+
+        <h1>Dashboard</h1>
+
+        <!-- Watch Later Section -->
+        <h2>⏳ Watch Later</h2>
+
+        <div class="watch-later-section">
+            {% if watch_later_items %}
+                {% for item in watch_later_items %}
+                    <div class="film-card">
+                        <a href="{% url 'movies:film_detail' item.film.id %}">
+                            <img src="{{ item.film.thumbnail.url }}" alt="{{ item.film.titre }}">
+                            <div class="film-title">{{ item.film.titre }}</div>
+                        </a>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>Aucun film en attente.</p>
+            {% endif %}
+        </div>
+
+        <hr>
+
+        <!-- Search bar -->
+        <div class="search-bar">
+            <form method="get">
+                <input type="text" name="q" placeholder="Rechercher un film..." value="{{ query }}">
+                <button type="submit">Rechercher</button>
+            </form>
+        </div>
+
+        <!-- Films -->
+        <div class="films-container">
+            {% for film in films %}
+                <div class="film-card">
+                    <a href="{% url 'movies:film_detail' film.id %}">
+                        <img src="{{ film.thumbnail.url }}" alt="{{ film.titre }}">
+                        <div class="film-title">{{ film.titre }}</div>
+                    </a>
+
+                    <div><strong>Genre :</strong> {{ film.genre }}</div>
+                    <div><strong>Note moyenne :</strong> ⭐ {{ film.get_moyenne }}/5</div>
+
+                    {% if film.id in watch_later_ids %}
+                        <form action="{% url 'playlists:remove_watch_later' film.id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn remove-watch-later">Retirer de Watch Later</button>
+                        </form>
+                    {% else %}
+                        <form action="{% url 'playlists:add_watch_later' film.id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn watch-later">Ajouter à Watch Later</button>
+                        </form>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <p>Aucun film trouvé.</p>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

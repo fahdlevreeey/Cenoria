@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ film.titre }} - Cenoria</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        .film-header { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; }
+        .film-header img { width: 200px; height: auto; }
+        h1 { margin: 0; }
+        .btn { padding: 5px 10px; margin-top: 10px; cursor: pointer; }
+        .watch-later { background-color: #f0c040; border: none; }
+        .remove-watch-later { background-color: #f08080; border: none; }
+        form { display: inline; }
+        video { width: 100%; height: auto; margin-bottom: 20px; }
+        .notes { margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- En-tête -->
+    <div class="film-header">
+        <img src="{{ film.thumbnail.url }}" alt="{{ film.titre }}">
+        <div>
+            <h1>{{ film.titre }}</h1>
+            <p><strong>Genre :</strong> {{ film.genre }}</p>
+            <p><strong>Date de sortie :</strong> {{ film.date_sortie }}</p>
+            <p><strong>Note moyenne :</strong> ⭐ {{ film.get_moyenne }}/5</p>
+
+            <!-- Watch Later -->
+            {% if film.id in watch_later_ids %}
+            <form action="{% url 'playlists:remove_watch_later' film.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn remove-watch-later">Retirer de Watch Later</button>
+            </form>
+            {% else %}
+            <form action="{% url 'playlists:add_watch_later' film.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn watch-later">Ajouter à Watch Later</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Video Player -->
+    <video controls>
+        <source src="{{ film.video.url }}" type="video/mp4">
+        Votre navigateur ne supporte pas la lecture de vidéos.
+    </video>
+
+    <!-- Description -->
+    <p>{{ film.description }}</p>
+
+    <!-- Notation utilisateur -->
+    <div class="notes">
+        <h3>Ta note</h3>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.valeur.label }} :
+            {{ form.valeur }}
+            <button type="submit" class="btn">Noter</button>
+        </form>
+
+        {% if note_user %}
+        <p>Ta note actuelle : {{ note_user.valeur }}/5</p>
+        {% endif %}
+    </div>
+
+    <button onclick="openPopup()">➕ Ajouter à une playlist</button>
+
+<div id="playlist-popup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+  <div style="background:white; width:300px; margin:100px auto; padding:20px;">
+    <h3>Choisir une playlist</h3>
+
+    {% for playlist in playlists %}
+      <form method="post" action="{% url 'playlists:add_to_playlist' playlist.id film.id %}">
+        {% csrf_token %}
+        <button type="submit">{{ playlist.name }}</button>
+      </form>
+    {% empty %}
+      <p>Aucune playlist</p>
+    {% endfor %}
+
+    <br>
+    <button onclick="closePopup()">Fermer</button>
+  </div>
+</div>
+
+<script>
+function openPopup() {
+    document.getElementById("playlist-popup").style.display = "block";
+}
+function closePopup() {
+    document.getElementById("playlist-popup").style.display = "none";
+}
+</script>
+
+
+</div>
+
+</body>
+</html>

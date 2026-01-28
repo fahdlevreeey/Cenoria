@@ -1,28 +1,54 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
+    <meta charset="UTF-8">
     <title>Watch Later</title>
+    <style>
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+    </style>
 </head>
 <body>
 
-<h2>Watch Later</h2>
+<h1>🎬 Ma Watch Later</h1>
 
-<form method="post" action="{% url 'add_watch_later' %}">
-    {% csrf_token %}
-    <input name="title" placeholder="Movie title" required>
-    <button type="submit">Add</button>
-</form>
-
-<ul>
+{% if items %}
+<div class="grid">
     {% for item in items %}
-        <li>
-            {{ item.title }}
-            <a href="{% url 'remove_watch_later' item.id %}">❌</a>
-        </li>
-    {% empty %}
-        <li>No movies in watch later</li>
+    <div class="card">
+        <img src="{{ item.film.thumbnail.url }}" alt="{{ item.film.titre }}">
+        <h3>{{ item.film.titre }}</h3>
+        <p>{{ item.film.genre }}</p>
+
+        <a href="{% url 'movies:film_detail' item.film.id %}">Voir le film</a>
+
+        <form action="{% url 'playlists:remove_watch_later' item.film.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Retirer</button>
+        </form>
+    </div>
     {% endfor %}
-</ul>
+</div>
+{% else %}
+<p>Aucun film dans ta Watch Later pour l'instant 😅</p>
+{% endif %}
+
+<br>
+<a href="{% url 'movies:dashboard' %}">⬅ Retour au dashboard</a>
 
 </body>
 </html>

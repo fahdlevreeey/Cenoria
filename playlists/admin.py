@@ -12,4 +12,4 @@ class PlaylistAdmin(admin.ModelAdmin):
 
 @admin.register(WatchLater)
 class WatchLaterAdmin(admin.ModelAdmin):
-    list_display = ("title", "user", "added_at")
+    list_display = ("film", "user", "added_at")

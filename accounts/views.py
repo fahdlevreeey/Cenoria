@@ -96,7 +96,7 @@ def sign(request):
         messages.success(request, "Account created successfully")
 
         next_url = request.GET.get("next")
-        return redirect(next_url or "accounts:profile")
+        return redirect(next_url or "movies:dashboard")
 
     return render(request, "accounts/sign.html")
 
@@ -112,7 +112,7 @@ def user_login(request):
             messages.success(request, "Welcome back")
 
             next_url = request.GET.get("next")
-            return redirect(next_url or "accounts:profile")
+            return redirect(next_url or "movies:dashboard")
 
         return render(request, "accounts/login.html", {"error": "Invalid credentials"})
 
