@@ -71,7 +71,6 @@ def sign(request):
             password=password
         )
         login(request, user)
-        messages.success(request, "Account created successfully")
 
         next_url = request.GET.get("next")
         return redirect(next_url or "movies:dashboard")
@@ -87,7 +86,6 @@ def user_login(request):
         user = authenticate(request, username=username, password=password)
         if user:
             login(request, user)
-            messages.success(request, "Welcome back")
 
             next_url = request.GET.get("next")
             return redirect(next_url or "movies:dashboard")
