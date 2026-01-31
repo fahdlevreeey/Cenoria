@@ -1,107 +1,158 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Sign in - Cenoria</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription - Cenoria</title>
+
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+
+    <link rel="stylesheet" href="{% static 'css/design-system.css' %}">
+
     <style>
+        /* --- 1. ANNULATION DE LA SIDEBAR (CRUCIAL) --- */
         body {
+            padding-left: 0 !important; /* On annule le décalage */
             margin: 0;
-            font-family: Arial, sans-serif;
-            background: #0f0f0f;
-            color: #eee;
+            min-height: 100vh;
+            
+            /* Centrage parfait */
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 100vh;
+            justify-content: center;
+            
+            background-color: #000; /* Fond de sécurité */
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         }
 
-        .container {
-            background: #1a1a1a;
-            padding: 40px;
-            border-radius: 12px;
-            width: 400px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            text-align: center;
-        }
-
-        h2 {
-            margin-bottom: 25px;
-            font-size: 28px;
-        }
-
-        input {
+        /* --- 2. FOND ANIMÉ (Le même que Login) --- */
+        .animated-bg {
+            position: fixed; /* Fixed pour couvrir tout l'écran même si on scroll */
+            top: 0;
+            left: 0;
             width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border-radius: 6px;
-            border: 1px solid #333;
-            background: #111;
-            color: #eee;
-            font-size: 14px;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(229, 160, 13, 0.05) 0%, #000000 70%);
+            z-index: -1;
+            animation: pulse-light 8s infinite alternate;
         }
 
-        button {
-            width: 100%;
-            padding: 12px;
-            border-radius: 6px;
-            border: none;
-            background: #f0c040;
-            color: #111;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
+        @keyframes pulse-light {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.1); opacity: 1; }
         }
 
-        button:hover {
-            background: #e6b800;
-        }
-
-        .error-msg {
-            background: #d9534f;
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            color: white;
-        }
-
-        p {
-            margin-top: 20px;
-            font-size: 14px;
-        }
-
-        a {
-            color: #f0c040;
+        /* --- 3. STYLE DU LOGO --- */
+        .signup-logo {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--accent-yellow);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 1.5rem;
             text-decoration: none;
-            font-weight: bold;
+            text-shadow: 0 0 15px rgba(229, 160, 13, 0.2);
+            position: relative;
+            z-index: 2;
         }
 
-        a:hover {
-            text-decoration: underline;
+        /* --- 4. CARTE GLASS --- */
+        .glass-signup {
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            box-shadow: 0 0 50px rgba(0,0,0, 0.9);
+            width: 100%;
+            max-width: 450px; /* Un peu plus large que le login car plus de champs */
+            position: relative;
+            z-index: 2;
+        }
+
+        /* --- 5. INPUTS SOMBRES --- */
+        .form-control-dark {
+            background-color: rgba(0, 0, 0, 0.6); 
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 12px 15px;
+            font-size: 0.95rem;
+        }
+
+        .form-control-dark:focus {
+            background-color: black;
+            border-color: var(--accent-yellow);
+            color: white;
+            box-shadow: 0 0 0 1px var(--accent-yellow);
+        }
+
+        .form-control-dark::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* --- 6. LIENS --- */
+        .link-gold {
+            color: var(--accent-yellow);
+            font-weight: bold;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .link-gold:hover {
+            color: #fff;
+            text-shadow: 0 0 10px var(--accent-yellow);
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>Sign in</h2>
+    <div class="animated-bg"></div>
 
-    {% if error %}
-        <div class="error-msg">{{ error }}</div>
-    {% endif %}
+    <a href="/" class="signup-logo anim-fade-up">Cenoria</a>
 
-    <form method="post">
-        {% csrf_token %}
+    <div class="glass-signup p-4 p-md-5 anim-fade-up delay-100">
+        
+        <h2 class="text-white fw-bold mb-4 text-center">Inscription</h2>
 
-        <input type="text" name="username" placeholder="Username" required>
-        <input type="email" name="email" placeholder="Email">
-        <input type="password" name="password" placeholder="Password" required>
-        <input type="password" name="password2" placeholder="Confirm Password" required>
+        {% if error %}
+            <div class="alert alert-danger p-2 mb-3 text-center" style="background: rgba(220, 53, 69, 0.1); border: 1px solid rgba(220, 53, 69, 0.3); color: #ff6b6b; font-size: 0.9rem;">
+                {{ error }}
+            </div>
+        {% endif %}
 
-        <button type="submit">Sign in</button>
-    </form>
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="mb-3">
+                <input type="text" name="username" class="form-control form-control-dark" placeholder="Nom d'utilisateur" required>
+            </div>
 
-    <p>Already have an account? <a href="{% url 'accounts:login' %}">Login</a></p>
-</div>
+            <div class="mb-3">
+                <input type="email" name="email" class="form-control form-control-dark" placeholder="Adresse email (optionnel)">
+            </div>
+
+            <div class="mb-3">
+                <input type="password" name="password" class="form-control form-control-dark" placeholder="Mot de passe" required>
+            </div>
+
+            <div class="mb-4">
+                <input type="password" name="password2" class="form-control form-control-dark" placeholder="Confirmer le mot de passe" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-3 mb-3 fw-bold shadow-none text-uppercase">
+                Créer mon compte
+            </button>
+
+        </form>
+
+        <div class="mt-2 text-white-50 small text-center">
+            Déjà un compte ? 
+            <a href="{% url 'accounts:login' %}" class="link-gold ms-1">Se connecter.</a>
+        </div>
+    </div>
+
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 
 </body>
 </html>

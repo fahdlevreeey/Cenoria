@@ -1,0 +1,261 @@
+:root {
+    /* --- PALETTE DE COULEURS --- */
+    --bg-dark: #141414;        /* Le noir profond style Netflix */
+    --bg-panel: #1f1f1f;       /* Un gris très sombre pour les contrastes */
+    --accent-yellow: #E5A00D;  /* Jaune Premium/Or (ni trop fluo, ni trop moutarde) */
+    --text-white: #FFFFFF;     /* Titres */
+    --text-off-white: #B3B3B3; /* Paragraphes (reposant pour les yeux) */
+    
+    /* --- DIMENSIONS --- */
+    --sidebar-width: 250px;
+    --border-radius: 8px;
+}
+
+/* --- 1. BASE & TYPOGRAPHIE --- */
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-off-white);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* Police style Netflix */
+    margin: 0;
+    padding: 0;
+    /* Pour ne pas que le contenu passe sous la sidebar */
+    padding-left: var(--sidebar-width); 
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-white);
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+p {
+    color: var(--text-off-white);
+    line-height: 1.6;
+}
+
+/* --- 2. BARRE DE NAVIGATION LATÉRALE (Verticale Gauche) --- */
+.sidebar {
+    height: 100vh; /* Toute la hauteur */
+    width: var(--sidebar-width);
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.9); /* Noir presque opaque */
+    border-right: 1px solid rgba(255, 255, 255, 0.1); /* Ligne subtile */
+    padding: 2rem 1rem;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar .nav-link {
+    color: var(--text-off-white);
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+}
+
+.sidebar .nav-link:hover, .sidebar .nav-link.active {
+    color: var(--text-white);
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateX(5px); /* Petit effet de glissement */
+}
+
+/* --- 3. BOUTONS (Le système Jaune & Outline) --- */
+
+/* Bouton Principal (Jaune Premium - Plein) */
+.btn-primary {
+    background-color: var(--accent-yellow) !important;
+    border-color: var(--accent-yellow) !important;
+    color: #000000 !important; /* Texte noir sur jaune pour la lisibilité */
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 10px 24px;
+    border-radius: 4px;
+    transition: transform 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: #ffc107 !important; /* Un peu plus clair au survol */
+    transform: scale(1.05); /* Effet "pop" Netflix */
+}
+
+/* Bouton Secondaire (Outline - Transparent) */
+.btn-secondary, .btn-outline-light {
+    background-color: transparent !important;
+    border: 2px solid rgba(255, 255, 255, 0.5) !important;
+    color: var(--text-white) !important;
+    font-weight: 600;
+    padding: 10px 24px;
+    border-radius: 4px;
+}
+
+.btn-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border-color: var(--text-white) !important;
+}
+
+/* --- 4. GLASS CARDS (L'effet de verre demandé) --- */
+.glass-card {
+    background: rgba(255, 255, 255, 0.05); /* Fond très transparent */
+    backdrop-filter: blur(10px);          /* Le flou magique derrière */
+    -webkit-backdrop-filter: blur(10px);  /* Pour Safari */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Bordure subtile */
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); /* Ombre portée */
+    transition: transform 0.3s ease, background 0.3s;
+}
+
+.glass-card:hover {
+    transform: translateY(-5px); /* La carte se soulève */
+    background: rgba(255, 255, 255, 0.1); /* Devient un peu plus claire */
+}
+
+/* --- 5. SEARCH BAR MODERNE --- */
+.search-container {
+    position: relative;
+    max-width: 400px;
+}
+
+.search-input {
+    background-color: rgba(0, 0, 0, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: var(--text-white);
+    padding: 12px 20px;
+    border-radius: 50px; /* Bords tout ronds modernes */
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    background-color: black;
+    border-color: var(--accent-yellow); /* Touche de jaune au focus */
+    outline: none;
+    box-shadow: 0 0 10px rgba(229, 160, 13, 0.3);
+}
+
+/* Placeholder contrasté (pas gris foncé !) */
+.search-input::placeholder {
+    color: #cccccc; /* Gris très clair, bien lisible */
+    opacity: 1;
+}
+
+/* --- 6. LECTEUR VIDÉO STYLISÉ --- */
+.video-wrapper {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Styliser les boutons du lecteur (si tu utilises des boutons HTML custom) */
+.player-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.player-btn:hover {
+    background: var(--accent-yellow);
+    color: black;
+    transform: scale(1.1);
+}
+
+/* --- 7. ANIMATIONS CINÉMATIQUES --- */
+
+/* A. L'apparition en douceur (Fade In Up) */
+/* Idéal pour l'arrivée des films sur la page */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px); /* Vient du bas */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.anim-fade-up {
+    animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    opacity: 0; /* Caché au début */
+}
+
+/* Délais pour créer un effet de cascade (les éléments arrivent les uns après les autres) */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+
+/* B. L'effet "Shine" sur le bouton Gold (Effet Luxe) */
+/* Un reflet lumineux qui traverse le bouton */
+.btn-primary {
+    position: relative;
+    overflow: hidden; /* Important pour que le reflet ne dépasse pas */
+    z-index: 1;
+}
+
+.btn-primary::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: 0.5s;
+    z-index: -1;
+}
+
+.btn-primary:hover::after {
+    left: 100%;
+    transition: 0.7s ease-in-out; /* Le reflet traverse le bouton au survol */
+}
+
+/* C. L'effet Hover "Netflix Zoom" amélioré */
+/* On écrase un peu la classe .glass-card précédente pour la booster */
+.glass-card {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Effet "ressort" subtil */
+}
+
+.glass-card:hover {
+    transform: scale(1.05) translateY(-10px);
+    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--accent-yellow); /* Bordure dorée au survol */
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5), 
+                0 0 15px rgba(229, 160, 13, 0.2); /* Lueur dorée derrière */
+    z-index: 10; /* Passe devant les autres */
+}
+
+/* D. Animation de la barre latérale (Slide In) */
+@keyframes slideInLeft {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+}
+
+.sidebar {
+    animation: slideInLeft 0.5s ease-out forwards;
+}
+
+/* E. Pulsation subtile pour les éléments "En direct" ou importants */
+@keyframes pulseGold {
+    0% { box-shadow: 0 0 0 0 rgba(229, 160, 13, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(229, 160, 13, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(229, 160, 13, 0); }
+}
+
+.pulse-effect {
+    animation: pulseGold 2s infinite;
+}
