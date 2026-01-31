@@ -1,185 +1,138 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<title>Cenoria</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cenoria - Ton Cinéma Personnel</title>
 
-<style>
-:root{
-    --bg:#0f1115;
-    --bg2:#161a21;
-    --accent:#f0c040;
-    --text:#ffffff;
-    --muted:#b3b3b3;
-}
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/design-system.css' %}">
 
-body{
-    margin:0;
-    font-family:Segoe UI,Arial,sans-serif;
-    background:var(--bg);
-    color:var(--text);
-}
+    <style>
+        /* --- 1. CONFIGURATION GÉNÉRALE --- */
+        body {
+            padding-left: 0 !important; /* Pas de sidebar sur l'accueil */
+            overflow-x: hidden;
+            background-color: var(--bg-dark); /* Sécurité si l'image ne charge pas */
+        }
 
-/* Header */
-.header{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    padding:25px 60px;
-}
+        body, html {
+            height: 100%;
+            margin: 0;
+        }
 
-.logo{
-    font-size:26px;
-    font-weight:700;
-    color:var(--accent);
-}
+        /* --- 2. NAVBAR GLASS (Effet Verre Flouté) --- */
+        .glass-navbar {
+            background: rgba(20, 20, 20, 0.6); /* Noir transparent */
+            backdrop-filter: blur(15px);         /* Le flou derrière la barre */
+            -webkit-backdrop-filter: blur(15px); /* Pour Safari */
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* Ligne subtile */
+            transition: all 0.3s ease;
+        }
 
-/* Buttons */
-.btn{
-    padding:12px 22px;
-    border-radius:10px;
-    font-weight:600;
-    text-decoration:none;
-    display:inline-block;
-    transition:.2s;
-}
+        .logo-text {
+            color: var(--accent-yellow);
+            font-weight: 900;
+            letter-spacing: 4px;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+        }
 
-.btn-primary{
-    background:var(--accent);
-    color:#111;
-}
-
-.btn-outline{
-    border:2px solid var(--accent);
-    color:var(--accent);
-    background:transparent;
-}
-
-.btn-outline:hover{
-    background:var(--accent);
-    color:#111;
-}
-
-/* Hero */
-.hero{
-    min-height:70vh;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    text-align:center;
-    padding:0 20px;
-}
-
-.hero h1{
-    font-size:48px;
-    margin-bottom:15px;
-}
-
-.hero p{
-    color:var(--muted);
-    font-size:18px;
-    max-width:600px;
-}
-
-.hero-buttons{
-    margin-top:30px;
-    display:flex;
-    gap:15px;
-}
-
-/* Feature section */
-.features{
-    background:var(--bg2);
-    padding:70px 20px;
-    text-align:center;
-}
-
-.features h2{
-    margin-bottom:40px;
-}
-
-.feature-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:25px;
-    max-width:900px;
-    margin:auto;
-}
-
-.feature-card{
-    background:#1c212b;
-    padding:25px;
-    border-radius:14px;
-}
-
-.feature-card h3{
-    color:var(--accent);
-    margin-bottom:10px;
-}
-
-.feature-card p{
-    color:var(--muted);
-}
-
-/* Footer */
-.footer{
-    background:#0b0d11;
-    padding:25px;
-    text-align:center;
-    color:var(--muted);
-    font-size:14px;
-}
-</style>
+        /* --- 3. HERO SECTION --- */
+        .hero-section {
+            height: 100vh; 
+            width: 100%;
+            display: flex;       
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center;     
+            position: relative;      
+            
+            /* Fond avec dégradé subtil */
+            background: radial-gradient(circle at center, rgba(229, 160, 13, 0.12) 0%, rgba(20, 20, 20, 0) 60%);
+            padding-top: 60px; /* Pour compenser la hauteur de la navbar fixe */
+        }
+    </style>
 </head>
 
 <body>
 
-<!-- Header -->
-<div class="header">
-    <div class="logo">Cenoria</div>
-</div>
+    <nav class="navbar fixed-top glass-navbar w-100 p-3" style="z-index: 1000;">
+        <div class="container-fluid d-flex justify-content-center">
+            <span class="logo-text anim-fade-up">Cenoria</span>
+        </div>
+    </nav>
 
-<!-- Hero -->
-<section class="hero">
-    <h1>Ton cinéma personnel, partout.</h1>
-    <p>
-        Découvre, organise et sauvegarde tes films préférés.
-        Crée des playlists, utilise Watch Later et profite d'une expérience moderne.
-    </p>
+    <section class="hero-section">
+        
+        <div class="text-center px-3" style="max-width: 800px;">
+            
+            <h1 class="display-3 fw-bold text-white mb-4 anim-fade-up delay-100">
+                Ton cinéma personnel,<br> partout.
+            </h1>
+            
+            <p class="lead text-white-50 mb-5 anim-fade-up delay-200" style="font-size: 1.4rem;">
+                Découvre, organise et sauvegarde tes films préférés.<br> 
+                Crée des playlists et profite d'une expérience moderne.
+            </p>
 
-    <div class="hero-buttons">
-        <a href="/login/" class="btn btn-primary">Se connecter</a>
-        <a href="/sign/" class="btn btn-outline">S'inscrire</a>
-    </div>
-</section>
+            <div class="d-flex justify-content-center gap-3 anim-fade-up delay-300 flex-wrap">
+                <a href="/login/" class="btn btn-primary btn-lg px-5 py-3 text-uppercase">
+                    Se connecter
+                </a>
+                <a href="/sign/" class="btn btn-outline-light btn-lg px-5 py-3 text-uppercase">
+                    S'inscrire
+                </a>
+            </div>
 
-<!-- Features -->
-<section class="features">
-    <h2>Pourquoi Cenoria ?</h2>
-
-    <div class="feature-grid">
-        <div class="feature-card">
-            <h3>🎬 Films organisés</h3>
-            <p>Toutes tes vidéos classées par catégories et playlists.</p>
         </div>
 
-        <div class="feature-card">
-            <h3>⏳ Watch Later</h3>
-            <p>Garde les films que tu veux regarder plus tard.</p>
+        </section>
+
+    <section class="container pb-5 mb-5" style="margin-top: -50px; position: relative; z-index: 2;">
+        
+        <div class="row justify-content-center mb-5">
+            <div class="col-12 text-center anim-fade-up delay-300">
+                <h2 class="fw-bold text-white display-6">Pourquoi Cenoria ?</h2>
+                <div style="width: 60px; height: 3px; background: var(--accent-yellow); margin: 15px auto;"></div>
+            </div>
         </div>
 
-        <div class="feature-card">
-            <h3>⚡ Rapide & moderne</h3>
-            <p>Interface fluide pensée comme une vraie app de streaming.</p>
-        </div>
-    </div>
-</section>
+        <div class="row g-4 justify-content-center">
+            
+            <div class="col-md-4 anim-fade-up">
+                <div class="glass-card h-100 text-center p-4">
+                    <div class="display-4 mb-3">🎬</div>
+                    <h3 style="color: var(--accent-yellow); font-size: 1.5rem;">Films organisés</h3>
+                    <p class="small text-white-50">Tes vidéos classées par catégories.</p>
+                </div>
+            </div>
 
-<!-- Footer -->
-<div class="footer">
-    © 2026 Cenoria — Tous droits réservés
-</div>
+            <div class="col-md-4 anim-fade-up delay-100">
+                <div class="glass-card h-100 text-center p-4">
+                    <div class="display-4 mb-3">⏳</div>
+                    <h3 style="color: var(--accent-yellow); font-size: 1.5rem;">Watch Later</h3>
+                    <p class="small text-white-50">Ne perds plus jamais un film de vue.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4 anim-fade-up delay-200">
+                <div class="glass-card h-100 text-center p-4">
+                    <div class="display-4 mb-3">⚡</div>
+                    <h3 style="color: var(--accent-yellow); font-size: 1.5rem;">Moderne</h3>
+                    <p class="small text-white-50">Une interface fluide et sombre.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <footer class="text-center py-4 text-white-50" style="border-top: 1px solid rgba(255,255,255,0.05);">
+        <small>© 2026 Cenoria — Tous droits réservés</small>
+    </footer>
+
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 
 </body>
 </html>
