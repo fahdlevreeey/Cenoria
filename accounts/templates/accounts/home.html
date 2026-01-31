@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Cenoria</title>
+
+<style>
+:root{
+    --bg:#0f1115;
+    --bg2:#161a21;
+    --accent:#f0c040;
+    --text:#ffffff;
+    --muted:#b3b3b3;
+}
+
+body{
+    margin:0;
+    font-family:Segoe UI,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+}
+
+/* Header */
+.header{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:25px 60px;
+}
+
+.logo{
+    font-size:26px;
+    font-weight:700;
+    color:var(--accent);
+}
+
+/* Buttons */
+.btn{
+    padding:12px 22px;
+    border-radius:10px;
+    font-weight:600;
+    text-decoration:none;
+    display:inline-block;
+    transition:.2s;
+}
+
+.btn-primary{
+    background:var(--accent);
+    color:#111;
+}
+
+.btn-outline{
+    border:2px solid var(--accent);
+    color:var(--accent);
+    background:transparent;
+}
+
+.btn-outline:hover{
+    background:var(--accent);
+    color:#111;
+}
+
+/* Hero */
+.hero{
+    min-height:70vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:0 20px;
+}
+
+.hero h1{
+    font-size:48px;
+    margin-bottom:15px;
+}
+
+.hero p{
+    color:var(--muted);
+    font-size:18px;
+    max-width:600px;
+}
+
+.hero-buttons{
+    margin-top:30px;
+    display:flex;
+    gap:15px;
+}
+
+/* Feature section */
+.features{
+    background:var(--bg2);
+    padding:70px 20px;
+    text-align:center;
+}
+
+.features h2{
+    margin-bottom:40px;
+}
+
+.feature-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:25px;
+    max-width:900px;
+    margin:auto;
+}
+
+.feature-card{
+    background:#1c212b;
+    padding:25px;
+    border-radius:14px;
+}
+
+.feature-card h3{
+    color:var(--accent);
+    margin-bottom:10px;
+}
+
+.feature-card p{
+    color:var(--muted);
+}
+
+/* Footer */
+.footer{
+    background:#0b0d11;
+    padding:25px;
+    text-align:center;
+    color:var(--muted);
+    font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Header -->
+<div class="header">
+    <div class="logo">Cenoria</div>
+</div>
+
+<!-- Hero -->
+<section class="hero">
+    <h1>Ton cinéma personnel, partout.</h1>
+    <p>
+        Découvre, organise et sauvegarde tes films préférés.
+        Crée des playlists, utilise Watch Later et profite d'une expérience moderne.
+    </p>
+
+    <div class="hero-buttons">
+        <a href="/login/" class="btn btn-primary">Se connecter</a>
+        <a href="/sign/" class="btn btn-outline">S'inscrire</a>
+    </div>
+</section>
+
+<!-- Features -->
+<section class="features">
+    <h2>Pourquoi Cenoria ?</h2>
+
+    <div class="feature-grid">
+        <div class="feature-card">
+            <h3>🎬 Films organisés</h3>
+            <p>Toutes tes vidéos classées par catégories et playlists.</p>
+        </div>
+
+        <div class="feature-card">
+            <h3>⏳ Watch Later</h3>
+            <p>Garde les films que tu veux regarder plus tard.</p>
+        </div>
+
+        <div class="feature-card">
+            <h3>⚡ Rapide & moderne</h3>
+            <p>Interface fluide pensée comme une vraie app de streaming.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<div class="footer">
+    © 2026 Cenoria — Tous droits réservés
+</div>
+
+</body>
+</html>

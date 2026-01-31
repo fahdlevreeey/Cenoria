@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Watch Later - Cenoria</title>
+<title>{{ category_code }} - Cenoria</title>
 <style>
 :root{
     --bg:#0f1115;
@@ -65,6 +65,7 @@ body{
     justify-content:flex-end;
     align-items:center;
     margin-bottom:20px;
+    position:relative;
 }
 
 .profile-wrapper{position:relative}
@@ -114,56 +115,38 @@ h1{margin-top:0;margin-bottom:20px}
     gap:20px;
 }
 
-/* Card */
+/* Film card */
 .film-card{
     background:var(--card);
     border-radius:14px;
     overflow:hidden;
-    display:flex;
-    flex-direction:column;
-    transition:.25s;
-}
-
-.film-card:hover{
-    transform:translateY(-5px);
+    text-align:center;
+    padding:10px;
 }
 
 .film-card img{
     width:100%;
     height:250px;
     object-fit:cover;
-    display:block;
+    border-radius:6px;
 }
 
-.card-body{
-    padding:12px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:6px;
-}
-
-.film-title{
+.film-card div{
+    margin-top:8px;
     font-weight:600;
-    margin-bottom:5px;
-    text-align:center;
-}
-
-.muted{
-    color:var(--muted);
-    font-size:14px;
-    text-align:center;
 }
 
 /* Buttons */
 .btn{
-    width:100%;
     padding:8px;
     border-radius:8px;
     cursor:pointer;
-    text-align:center;
     font-weight:bold;
     transition:.2s;
+    text-align:center;
+    display:inline-block;
+    width:90%;
+    margin-top:8px;
 }
 
 .btn-primary{
@@ -206,10 +189,7 @@ h1{margin-top:0;margin-bottom:20px}
 
 <div class="top-bar">
     <div class="profile-wrapper">
-        <div class="profile-circle" onclick="toggleProfileMenu()">
-            {{ request.user.username|slice:":1"|upper }}
-        </div>
-
+        <div class="profile-circle" onclick="toggleProfileMenu()">P</div>
         <div class="profile-menu" id="profileMenu">
             <a href="{% url 'accounts:settings' %}">⚙️ Settings</a>
             <a href="{% url 'accounts:logout' %}">🚪 Déconnexion</a>
@@ -217,47 +197,51 @@ h1{margin-top:0;margin-bottom:20px}
     </div>
 </div>
 
-<h1>🎬 Ma Watch Later</h1>
+<h1>{{ category_code }}</h1>
 
-{% if items %}
+{% if films %}
 <div class="films-container">
-    {% for item in items %}
+    {% for film in films %}
     <div class="film-card">
-        <img src="{{ item.film.thumbnail.url }}" alt="{{ item.film.titre }}">
-        <div class="card-body">
-            <div class="film-title">{{ item.film.titre }}</div>
-            <div class="muted">{{ item.film.genre }}</div>
-            <a href="{% url 'movies:film_detail' item.film.id %}" class="btn btn-primary">Voir le film</a>
-            <form method="post" action="{% url 'playlists:remove_watch_later' item.film.id %}">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-outline">Retirer</button>
-            </form>
-        </div>
+        <a href="{% url 'movies:film_detail' film.id %}">
+            <img src="{{ film.thumbnail.url }}" alt="{{ film.titre }}">
+            <div>{{ film.titre }}</div>
+        </a>
+
+        {% if film.id in watch_later_ids %}
+        <form action="{% url 'playlists:remove_watch_later' film.id %}" method="post">
+            {% csrf_token %}
+            <button class="btn btn-outline">Retirer de Watch Later</button>
+        </form>
+        {% else %}
+        <form action="{% url 'playlists:add_watch_later' film.id %}" method="post">
+            {% csrf_token %}
+            <button class="btn btn-primary">Ajouter à Watch Later</button>
+        </form>
+        {% endif %}
     </div>
     {% endfor %}
 </div>
 {% else %}
-<p class="muted">Aucun film dans ta Watch Later pour l'instant 😅</p>
+<p class="muted">Aucun film disponible dans cette catégorie 😅</p>
 {% endif %}
 
 <br>
-<a href="{% url 'movies:dashboard' %}" class="btn btn-primary">⬅ Retour au Dashboard</a>
+<a href="{% url 'movies:categories_overview' %}" class="btn btn-primary">⬅ Retour aux Catégories</a>
 
 </div>
 </div>
 
 <script>
-function toggleProfileMenu() {
-    const menu = document.getElementById("profileMenu");
-    menu.style.display = menu.style.display === "block" ? "none" : "block";
+function toggleProfileMenu(){
+    const menu=document.getElementById("profileMenu");
+    menu.style.display=menu.style.display==="block"?"none":"block";
 }
-
-document.addEventListener("click", function(e) {
-    const menu = document.getElementById("profileMenu");
-    const circle = document.querySelector(".profile-circle");
-
-    if (!menu.contains(e.target) && !circle.contains(e.target)) {
-        menu.style.display = "none";
+document.addEventListener("click",function(e){
+    const menu=document.getElementById("profileMenu");
+    const circle=document.querySelector(".profile-circle");
+    if(!menu.contains(e.target)&&!circle.contains(e.target)){
+        menu.style.display="none";
     }
 });
 </script>

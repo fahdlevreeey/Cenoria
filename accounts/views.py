@@ -1,0 +1,106 @@
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm
+
+from .forms import (
+    UserUpdateForm,
+    EmailUpdateForm,
+)
+
+
+@login_required
+def settings_view(request):
+
+    if request.method == "POST":
+        action = request.POST.get("action")
+
+        if action == "change_email":
+            email_form = EmailUpdateForm(request.POST, instance=request.user)
+            if email_form.is_valid():
+                email_form.save()
+                return redirect("accounts:settings")
+
+        elif action == "change_password":
+            pass_form = PasswordChangeForm(user=request.user, data=request.POST)
+            if pass_form.is_valid():
+                user = pass_form.save()
+                update_session_auth_hash(request, user)
+                return redirect("accounts:settings")
+
+    email_form = EmailUpdateForm(instance=request.user)
+    user_form = UserUpdateForm(instance=request.user)
+    pass_form = PasswordChangeForm(user=request.user)
+
+    return render(
+        request,
+        "accounts/settings.html",
+        {
+            "email_form": email_form,
+            "user_form": user_form,
+            "pass_form": pass_form,
+        },
+    )
+
+
+
+def sign(request):
+    if request.method == "POST":
+        username = (request.POST.get("username") or "").strip()
+        email = (request.POST.get("email") or "").strip()
+        password = request.POST.get("password") or ""
+        password2 = request.POST.get("password2") or ""
+
+        if not username:
+            return render(request, "accounts/sign.html", {"error": "Username is required"})
+        if not password:
+            return render(request, "accounts/sign.html", {"error": "Password is required"})
+        if password != password2:
+            return render(request, "accounts/sign.html", {"error": "Passwords do not match"})
+
+        if User.objects.filter(username=username).exists():
+            return render(request, "accounts/sign.html", {"error": "Username already exists"})
+
+        if email and User.objects.filter(email=email).exists():
+            return render(request, "accounts/sign.html", {"error": "Email already exists"})
+
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password
+        )
+        login(request, user)
+
+        next_url = request.GET.get("next")
+        return redirect(next_url or "movies:dashboard")
+
+    return render(request, "accounts/sign.html")
+
+
+def user_login(request):
+    if request.method == "POST":
+        username = (request.POST.get("username") or "").strip()
+        password = request.POST.get("password") or ""
+
+        user = authenticate(request, username=username, password=password)
+        if user:
+            login(request, user)
+
+            next_url = request.GET.get("next")
+            return redirect(next_url or "movies:dashboard")
+
+        return render(request, "accounts/login.html", {"error": "Invalid credentials"})
+
+    return render(request, "accounts/login.html")
+
+
+def user_logout(request):
+    logout(request)
+    return redirect("accounts:login")
+
+
+
+
+def accounts_home(request):
+    return render(request, "accounts/home.html")

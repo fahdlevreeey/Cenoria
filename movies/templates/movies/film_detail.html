@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ film.titre }} - Cenoria</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #0f0f0f;
+            color: #eee;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: flex-end;
+            padding: 15px 30px;
+            border-bottom: 1px solid #222;
+        }
+
+        .profile-wrapper {
+            position: relative;
+        }
+
+        .profile-circle {
+            width: 40px;
+            height: 40px;
+            background: #333;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .profile-menu {
+            position: absolute;
+            right: 0;
+            top: 50px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            width: 160px;
+            display: none;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.5);
+            z-index: 100;
+            color: white;
+        }
+
+        .profile-menu a {
+            display: block;
+            padding: 10px;
+            color: #eee;
+            text-decoration: none;
+        }
+
+        .profile-menu a:hover {
+            background: #333;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        video {
+            width: 100%;
+            max-height: 600px;
+            border-radius: 12px;
+            background: black;
+        }
+
+        .film-info {
+            margin-top: 25px;
+        }
+
+        .film-title {
+            margin: 0 0 10px;
+            font-size: 28px;
+        }
+
+        .meta {
+            color: #aaa;
+            margin-bottom: 15px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: none;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .btn.primary {
+            background: #f0c040;
+            color: #111;
+        }
+
+        .btn.primary:hover {
+            background: #e6b800;
+        }
+
+        .btn.danger {
+            background: #d9534f;
+            color: white;
+        }
+
+        .btn.danger:hover {
+            background: #c9302c;
+        }
+
+        .btn.outline {
+            background: transparent;
+            border: 2px solid #f0c040;
+            color: #f0c040;
+        }
+
+        .btn.outline:hover {
+            background: #f0c040;
+            color: #111;
+        }
+
+        .description {
+            color: #ccc;
+            line-height: 1.6;
+        }
+
+        .notes {
+            margin-top: 20px;
+        }
+
+        /* Popup playlist */
+        #playlist-popup {
+            display:none;
+            position:fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background:rgba(0,0,0,0.7);
+            z-index: 200;
+        }
+
+        .popup-box {
+            background:#1a1a1a;
+            width:320px;
+            margin:120px auto;
+            padding:20px;
+            border-radius:10px;
+            color:white;
+        }
+
+        .popup-box button {
+            margin-top: 8px;
+            width: 100%;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+    <div class="profile-wrapper">
+        <div class="profile-circle" onclick="toggleProfileMenu()">
+            {{ request.user.username|slice:":1"|upper }}
+        </div>
+
+        <div class="profile-menu" id="profileMenu">
+            <a href="{% url 'accounts:settings' %}">⚙️ Settings</a>
+            <a href="{% url 'accounts:logout' %}">🚪 Déconnexion</a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- Video Player -->
+    <video controls>
+        <source src="{{ film.video.url }}" type="video/mp4">
+    </video>
+
+    <!-- Film Info -->
+    <div class="film-info">
+        <h1 class="film-title">{{ film.titre }}</h1>
+
+        <div class="meta">
+            <span>{{ film.genre }}</span> • 
+            <span>{{ film.date_sortie }}</span> • 
+            <span>⭐ {{ film.get_moyenne }}/5</span>
+        </div>
+
+        <div class="actions">
+            {% if film.id in watch_later_ids %}
+            <form action="{% url 'playlists:remove_watch_later' film.id %}" method="post">
+                {% csrf_token %}
+                <button class="btn danger">Retirer de Watch Later</button>
+            </form>
+            {% else %}
+            <form action="{% url 'playlists:add_watch_later' film.id %}" method="post">
+                {% csrf_token %}
+                <button class="btn primary">Ajouter à Watch Later</button>
+            </form>
+            {% endif %}
+
+            <button class="btn outline" onclick="openPopup()">➕ Ajouter à Playlist</button>
+        </div>
+
+        <p class="description">{{ film.description }}</p>
+
+        <!-- Notation -->
+        <div class="notes">
+            <h3>Ta note</h3>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.valeur.label }} :
+                {{ form.valeur }}
+                <button type="submit" class="btn primary">Noter</button>
+            </form>
+
+            {% if note_user %}
+                <p>Ta note actuelle : {{ note_user.valeur }}/5</p>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+<!-- Playlist Popup -->
+<div id="playlist-popup">
+  <div class="popup-box">
+    <h3>Choisir une playlist</h3>
+
+    {% for playlist in playlists %}
+      <form method="post" action="{% url 'playlists:add_to_playlist' playlist.id film.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn primary">{{ playlist.name }}</button>
+      </form>
+    {% empty %}
+      <p>Aucune playlist</p>
+    {% endfor %}
+
+    <br>
+    <button onclick="closePopup()" class="btn outline">Fermer</button>
+  </div>
+</div>
+
+<script>
+function toggleProfileMenu() {
+    const menu = document.getElementById("profileMenu");
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+document.addEventListener("click", function(e) {
+    const menu = document.getElementById("profileMenu");
+    const circle = document.querySelector(".profile-circle");
+    if (!menu.contains(e.target) && !circle.contains(e.target)) {
+        menu.style.display = "none";
+    }
+});
+
+function openPopup() {
+    document.getElementById("playlist-popup").style.display = "block";
+}
+
+function closePopup() {
+    document.getElementById("playlist-popup").style.display = "none";
+}
+</script>
+
+</body>
+</html>
