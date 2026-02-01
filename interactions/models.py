@@ -16,7 +16,7 @@ class Note(models.Model):
 
     def __str__(self):
         return f"Note de {self.utilisateur} sur {self.film} : {self.valeur}/5"
-    
+
 
 class Meta:
-    unique_together = ('utilisateur', 'film') 
+    unique_together = ("utilisateur", "film")

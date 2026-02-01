@@ -6,28 +6,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ film.titre }} - Cenoria</title>
 
+    <link rel="stylesheet" href="{% static 'plyr/plyr.css' %}">
+
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
 
     <link rel="stylesheet" href="{% static 'css/design-system.css' %}">
 
     <style>
-        /* Player Vidéo Style Cinéma */
+        /* --- CUSTOMISATION PLYR (Style Cenoria) --- */
+        :root {
+            --plyr-color-main: var(--accent-yellow); /* Jaune Cenoria */
+        }
+        
+        .plyr {
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Player Vidéo wrapper */
         .video-wrapper {
             width: 100%;
-            background: #000;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-            border: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 20px;
         }
 
-        video {
-            width: 100%;
-            max-height: 70vh;
-            display: block;
-        }
-
-        /* Avatar Profil (Copie du Dashboard) */
+        /* Avatar Profil */
         .profile-avatar {
             width: 45px;
             height: 45px;
@@ -47,12 +52,13 @@
             background-color: rgba(20, 20, 20, 0.95);
             border: 1px solid rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
+            z-index: 9999;
         }
         
         .dropdown-item { color: var(--text-off-white); }
         .dropdown-item:hover { background-color: rgba(255, 255, 255, 0.1); color: white; }
 
-        /* Meta tags (Genre, Date...) */
+        /* Meta tags */
         .film-meta span {
             display: inline-block;
             background: rgba(255,255,255,0.1);
@@ -63,7 +69,7 @@
             color: var(--text-off-white);
         }
 
-        /* Input de Note stylisé */
+        /* Input Note */
         .form-select-dark {
             background-color: rgba(0,0,0,0.5);
             border: 1px solid rgba(255,255,255,0.2);
@@ -88,7 +94,7 @@
 
     <div class="container-fluid p-4">
         
-        <div class="d-flex justify-content-end mb-4 anim-fade-up">
+        <div class="d-flex justify-content-end mb-4 anim-fade-up" style="position: relative; z-index: 100;">
             <div class="dropdown">
                 <div class="profile-avatar" data-bs-toggle="dropdown" aria-expanded="false">
                     {{ request.user.username|slice:":1"|upper }}
@@ -105,10 +111,10 @@
         <div class="row g-5">
             
             <div class="col-lg-8 anim-fade-up delay-100">
-                <div class="video-wrapper mb-4">
-                    <video controls poster="{{ film.thumbnail.url }}">
-                        <source src="{{ film.video.url }}" type="video/mp4">
-                        Votre navigateur ne supporte pas la vidéo.
+                <div class="video-wrapper">
+                    <video id="player" playsinline controls data-poster="{{ film.thumbnail.url }}">
+                        <source src="{{ film.video.url }}" type="video/mp4" />
+                        Votre navigateur ne supporte pas la lecture de vidéos HTML5.
                     </video>
                 </div>
 
@@ -212,6 +218,41 @@
     </div>
 
     <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    
+    <script src="{% static 'plyr/plyr.js' %}"></script>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const player = new Plyr('video', {
+                // 1. On configure le saut à 5 secondes (au lieu de 10 par défaut)
+                seekTime: 5,
+
+                // 2. On ajoute 'rewind' et 'fast-forward' dans la liste des boutons
+                controls: [
+                    'play-large',   // Gros bouton play au centre
+                    'rewind',       // ⏪ Reculer de 5s
+                    'play',         // Play/Pause
+                    'fast-forward', // ⏩ Avancer de 5s
+                    'progress',     // Barre de temps
+                    'current-time', // Temps écoulé
+                    'duration',     // Durée totale
+                    'mute',         // Muet
+                    'volume',       // Volume
+                    'captions',     // Sous-titres
+                    'settings',     // Qualité/Vitesse
+                    'pip',          // Picture-in-picture
+                    'airplay',      // Casting
+                    'fullscreen'    // Plein écran
+                ],
+                
+                // Petits réglages pour l'expérience utilisateur
+                tooltips: { controls: true, seek: true },
+                i18n: {
+                    rewind: 'Reculer de 5s',
+                    fastForward: 'Avancer de 5s'
+                }
+            });
+        });
+    </script>
 </body>
 </html>
